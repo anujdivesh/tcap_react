@@ -1,0 +1,23 @@
+{
+  "main.css": "/tcap/static/css/main.3c9cbe1a.chunk.css",
+  "main.js": "/tcap/static/js/main.ca71fb78.chunk.js",
+  "main.js.map": "/tcap/static/js/main.ca71fb78.chunk.js.map",
+  "static/js/1.599995f5.chunk.js": "/tcap/static/js/1.599995f5.chunk.js",
+  "static/js/1.599995f5.chunk.js.map": "/tcap/static/js/1.599995f5.chunk.js.map",
+  "static/css/2.4d952807.chunk.css": "/tcap/static/css/2.4d952807.chunk.css",
+  "static/js/2.baef13d2.chunk.js": "/tcap/static/js/2.baef13d2.chunk.js",
+  "static/js/2.baef13d2.chunk.js.map": "/tcap/static/js/2.baef13d2.chunk.js.map",
+  "runtime~main.js": "/tcap/static/js/runtime~main.2a27bf45.js",
+  "runtime~main.js.map": "/tcap/static/js/runtime~main.2a27bf45.js.map",
+  "static/media/leaflet.draw.css": "/tcap/static/media/spritesheet.fd5728f2.svg",
+  "static/media/spx.png": "/tcap/static/media/spx.940d6b4a.png",
+  "static/media/tv.png": "/tcap/static/media/tv.9b3244bd.png",
+  "static/media/undp2.png": "/tcap/static/media/undp2.7590ee4a.png",
+  "static/media/tcap.png": "/tcap/static/media/tcap.2d06654e.png",
+  "static/media/logo_GCF2.png": "/tcap/static/media/logo_GCF2.013f2feb.png",
+  "static/css/main.3c9cbe1a.chunk.css.map": "/tcap/static/css/main.3c9cbe1a.chunk.css.map",
+  "static/css/2.4d952807.chunk.css.map": "/tcap/static/css/2.4d952807.chunk.css.map",
+  "index.html": "/tcap/index.html",
+  "precache-manifest.e07fbefba9c60eb81ddf2869b6d5ccbe.js": "/tcap/precache-manifest.e07fbefba9c60eb81ddf2869b6d5ccbe.js",
+  "service-worker.js": "/tcap/service-worker.js"
+}
