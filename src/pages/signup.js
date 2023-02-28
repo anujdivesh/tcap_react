@@ -9,7 +9,7 @@ const SignUp = () => {
     <div id="header">
       <h2>TCAP Dashboard</h2>
     </div>
-    <p>This portal was developed under the Tuvalu Coastal Adaption Project (TCAP). The dashboard provides home for gridded and geospatial data produced by the project. </p>
+    <p>This dashboard was developed under the Tuvalu Coastal Adaption Project (TCAP). The portal provides home for gridded and geospatial data produced by the project. </p>
 
     <pre><code className="javascript" id="code"></code></pre>
    
@@ -35,7 +35,7 @@ const SignUp = () => {
 <div class="card-body">
 <h5 class="card-title">Shoreline Change</h5>
 
-<p class="card-text" style={{fontSize:'13px'}}>Tool for doing shoreline change analysis.</p>
+<p class="card-text" style={{fontSize:'13px'}}>Tool to analyze shoreline change overtime.</p>
 
 <button type="button" className="btn btn-primary" onClick={()=>{ navigate('/tcap/shoreline')}}>Browse {">"}</button>
 </div>

@@ -452,8 +452,12 @@ const [country, setCountry] = useState("tuvalu");
 const [type, setType] = useState("exposed");
 function onChangeValueAsset(e) {
   if (country === 'island' || siteRef.current !== "Tuvalu"){
-
+    if (e.target.value === 'population'){
+      fetchData(siteRef.current, e.target.value+"_exposed",getYaxis(siteRef.current,e.target.value,type),true,true);
+    }
+    else{
     fetchData(siteRef.current, e.target.value+"_"+type,getYaxis(siteRef.current,e.target.value,type),true,true);
+    }
   }
   else{
 

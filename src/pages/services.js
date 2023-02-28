@@ -26,7 +26,7 @@ const Services = () => {
   const _isMounted = useRef(true);
   const legend = useRef([]);
   const mapContainer = React.useRef(null);
-  const url = "http://149.28.173.12/thredds/wms/Oceans/TCAP/";
+  const url = "https://tds-test.pacificdata.org/thredds/wms/Oceans/TCAP/";
 //  const baselayerurl = "https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png";
   const siteRef = useRef("Nanumaga");
   const imageRef = useRef("2021");

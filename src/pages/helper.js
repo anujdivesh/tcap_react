@@ -1116,7 +1116,7 @@ export const data2 = {
 };
 
 export const getAPI = async () =>{
-  const response = await fetch('http://opm.gem.spc.int/cgi-bin/Risk/test.py');
+  const response = await fetch('https://opm.gem.spc.int/cgi-bin/Risk/test.py');
   const data = await response.json();
   return data;
 }
