@@ -990,7 +990,7 @@ e.currentTarget.blur();
 </div>
 <div className="col-sm-2">
 
-<button type="button" className="btn btn-primary" onClick={handleSubmit}>Download File</button>
+<button type="button" className="btn btn-primary" onClick={handleSubmit}>Export</button>
 
 </div>
 </div>

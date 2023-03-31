@@ -3,10 +3,119 @@ import L from 'leaflet';
 import "./L.TileLayer.BetterWMS";
 import "leaflet-side-by-side";
 import './legend.css';
+import { saveAs } from "file-saver";
 import './checkbox.css';
-import {mayFlyer, addShoreline,sitesShoreline,sitesShoreline2, addTransact,getLegend,addShorelineImage} from "./helper";
+import {mayFlyer, addShoreline,sitesShoreline,sitesShoreline2, addTransact,getLegend,addShorelineImage, getArea,getChartOptionsShoreline} from "./helper";
+import {
+  Button,Modal
+} from "react-bootstrap";
+/*
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Filler,
+  Legend,
+} from 'chart.js';*/
+import {
+  Chart as ChartJS,
+  LinearScale,
+  CategoryScale,
+  BarElement,
+  PointElement,
+  LineElement,
+  Legend,
+  Tooltip,
+  LineController,
+  BarController,
+  Title
+} from 'chart.js';
+import { Bar } from 'react-chartjs-2';
+
 
 const Services = () => {
+/*
+  ChartJS.register(
+    CategoryScale,
+    LinearScale,
+    PointElement,
+    LineElement,
+    Title,
+    Tooltip,
+    Filler,
+    Legend
+  );*/
+
+ChartJS.register(
+  LinearScale,
+  CategoryScale,
+  BarElement,
+  PointElement,
+  LineElement,
+  Legend,
+  Tooltip,
+  LineController,
+  BarController,
+  Title,
+  {
+    id: 'no_data_label',
+    beforeDraw: function (chart, easing) {
+      var ctx = chart.ctx;
+      ctx.save();
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, chart.width, chart.height);
+      ctx.restore();
+    }
+}
+);
+  const [options, setOptions] = useState(getChartOptionsShoreline);
+  const chartOptions = (title, minv, maxv) => {
+    setOptions({
+      responsive: true,
+      plugins: {
+        title: {
+          display: true,
+          text: "Area of change "+title,
+        },
+      },
+      scales: {
+        x: {
+          title: {
+            display: true,
+            text: 'Years'
+          }
+        },
+        y: {
+          min: minv-0.06,
+          max: maxv+0.06,
+          ticks: {
+            beginAtZero: false,
+          },
+          title: {
+          display: true,
+          text: 'sq Kilometers',
+        }
+      }
+      }
+    })
+  };
+
+const [data, setData] = useState( {
+  labels: ['2010', '2011', '2012', '2013', '2014', '2015', '2016'],
+  datasets: [
+    {
+      fill: true,
+      label: 'Area of change',
+      data: [1,22,3,40,50,6,74],
+      borderColor: 'rgb(255, 99, 132)',
+      backgroundColor: 'rgba(255, 99, 132, 0.5)',
+    }
+  ],
+});
 
   
   //VARIABLES
@@ -16,7 +125,7 @@ const Services = () => {
   const [input, setInput] = useState(true);
   const displayRef = useRef(false);
   const layer = useRef();
-  //const layer2 = useRef();
+  const layer2 = useRef();
   const staelliteLayer = useRef();
   const staelliteLayer2 = useRef();
   const sidebyside = useRef();
@@ -34,21 +143,80 @@ const Services = () => {
   const [yearsCheck, setYearsCheck] = useState([]);
   const yearRef = useRef(2019);
 
+  //MOdel
+
+  const [show2, setShow2] = useState(false);
+  const handleClose2 = () => {
+    setShow2(false)
+  console.log(show2)
+  };
+
 const [isCheckAll, setIsCheckAll] = useState(false);
 
+const onClickShow2= async(siteName) => {
+
+  //Dummy test start
+  const url = "https://opm.gem.spc.int/cgi-bin/area/areaofchange.py?island="+siteName;
+  
+
+var SSP852060 = [];
+var SSP852100 = [];
+var minVal = 100;
+var maxVal = 0;
+await fetch(url).then((data)=> {
+    const res = data.json();
+    return res
+}).then((res) => {
+  
+  for (let i = 0; i < res.length; ++i){
+    var Scenario = res[i]['Date'];
+    var sourcedat = res[i]['Value']
+    SSP852100.push(Scenario)
+    SSP852060.push(sourcedat)
+    if (parseFloat(minVal) > parseFloat(sourcedat)){
+      minVal = parseFloat(sourcedat)
+    }
+    if (parseFloat(maxVal) < parseFloat(sourcedat)){
+      maxVal = parseFloat(sourcedat)
+    }
+  }
+
+chartOptions(siteName, Math.round(minVal * 10) / 10, Math.round(maxVal * 10) / 10)
+  setData( {
+    labels: SSP852100,
+    datasets: [
+      {
+        type: 'line',
+        fill: true,
+        label: 'Area of change - Line',
+        data: SSP852060,
+        borderColor: 'rgb(255, 99, 132)',
+        backgroundColor: 'rgba(255, 99, 132, 0.5)',
+      },
+      {
+        type: 'bar',
+        label: 'Area of change - Bar',
+        backgroundColor: 'rgb(75, 192, 192)',
+        data: SSP852060,
+        borderColor: 'white',
+        borderWidth: 2,
+      },
+    ],
+  });
+
+}).catch(e => {
+       console.log("error", e)
+   })
+
+  //dummy ends
+  setShow2(true) 
+};
   function initMap(url){
 
   setYears(sitesShoreline())
 
   setYearsCheck(sitesShoreline2())
-  /*
-    const BING_KEY = 'AuhiCJHlGzhg93IqUH_oCpl_-ZUrIE6SPftlyGYUvr9Amx5nzA-WqGcPquyFZl4L'
-    baseLayer.current = L.tileLayer.bing(BING_KEY, {
-      maxZoom: 5,
-      attribution:
-        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-    });
-    */
+
     baseLayer.current = L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
       attribution: '&copy; Pacific Community (OSM)',
       detectRetina: true
@@ -59,21 +227,9 @@ const [isCheckAll, setIsCheckAll] = useState(false);
     zoom: 7,
     center: [-6.287321, 176.320346]
   });
-/*
-  const redIcon = new L.Icon({
-    iconUrl:
-      "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png",
-    shadowUrl:
-      "https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png",
-    iconSize: [25, 41],
-    iconAnchor: [12, 41],
-    popupAnchor: [1, -34],
-    shadowSize: [41, 41]
-  });
 
-  layer2.current = L.marker([-6.287321, 176.320346],{icon:redIcon,id:1}).addTo(mapContainer.current).bindPopup("<p>hiie</p>",{
-    maxWidth: "auto"
-});*/
+  layer2.current = getArea(mapContainer.current, siteRef.current).on('click', function(e) {onClickShow2(siteRef.current)});
+
   mapContainer.current.createPane('left');
   mapContainer.current.createPane('right');
   baseLayer.current.addTo(mapContainer.current); 
@@ -86,7 +242,7 @@ const [isCheckAll, setIsCheckAll] = useState(false);
   legendColorRef.current = L.control({ position: "bottomright", id:12 });
   legendColorRef.current.onAdd = function() {
           var div = L.DomUtil.create("div", "legend");
-          div.innerHTML += "<h4>Legend</h4>";
+          div.innerHTML += "<h4>Legend (m/year)</h4>";
           div.innerHTML += '<i class="arrow-up"></i><span>>0.1</span><br>';
          // div.innerHTML += '<i style="background:  #2874a6"></i><span>>0.1</span><br>';
           div.innerHTML += '<i style="background: #a9cce3"></i><span>0.0 - 0.1</span><br>';
@@ -241,6 +397,22 @@ const handleSite=(e)=>{
       mapContainer.current.removeLayer(layer);
     }
  });
+ mapContainer.current.eachLayer(function (layer) {
+  const layername = layer.options.id;
+  console.log(layername)
+  if(layername === 999){
+    mapContainer.current.removeLayer(layer);
+  }
+});
+
+ //mapContainer.current.removeLayer(layer2.current);
+if(e.target.value === 'Funafuti'){
+  layer2.current = getArea(mapContainer.current, 'Fongafale').on('click', function(e) {onClickShow2('Fongafale')});
+  layer2.current = getArea(mapContainer.current, siteRef.current).on('click', function(e) {onClickShow2(siteRef.current)});
+}
+else{
+ layer2.current = getArea(mapContainer.current, siteRef.current).on('click', function(e) {onClickShow2(siteRef.current)});
+}
 // layer.current = addShoreline(mapContainer.current, siteRef.current, "2018", 'left')
   mayFlyer(mapContainer.current, siteRef.current);
   staelliteLayer.current = addShorelineImage(mapContainer.current, siteRef.current, "image", 'left','2019')
@@ -407,6 +579,20 @@ setYears(dummy)
   //console.log(isCheckAll);
 };
 
+const handleSubmit=(e)=>{
+  /*  saveAs(
+      getURL(mapContainer.current, siteRef.current, url_risk,assetRef.current,typeRef.current,siteRef.current,yearRef.current,climateRef.current,presentBoolRef.current,horizonRef.current,display3,country),
+      "risk.png"
+    );
+  */
+  const canvasSave = document.getElementById('stack');
+  canvasSave.toBlob(function (blob) {
+      saveAs(blob, "Export.png")
+  })
+  
+  e.currentTarget.blur();
+  }
+  
 
   return (
     <div className="container-fluid">
@@ -454,6 +640,7 @@ setYears(dummy)
                        key={input}
                       onChange={handleSelectAll}
                       defaultChecked={isCheckAll}
+                      disabled={checkedRef.current}
                       
                     />
                     <label
@@ -568,7 +755,20 @@ setYears(dummy)
       <div id="map" ref={mapContainer} style={{width:"100%", height:"100%",Zindex: "auto"}}></div>
       </div>
     </div>
+    <Modal show={show2} onHide={handleClose2} size="lg">
+        <Modal.Body>
+        <Bar  id="stack" options={options} data={data} />
+        </Modal.Body>
+        <Modal.Footer>
+        <button type="button" className="btn btn-primary" onClick={handleSubmit}>Export</button>
+          <Button variant="secondary" onClick={handleClose2}>
+            Close
+          </Button>
+         
+        </Modal.Footer>
+      </Modal>
   </div>
+  
 
   )
 }
