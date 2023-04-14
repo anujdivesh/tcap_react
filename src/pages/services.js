@@ -5,10 +5,13 @@ import "leaflet-side-by-side";
 import './legend.css';
 import { saveAs } from "file-saver";
 import './checkbox.css';
-import {mayFlyer, addShoreline,sitesShoreline,sitesShoreline2, addTransact,getLegend,addShorelineImage, getArea,getChartOptionsShoreline} from "./helper";
+import {mayFlyer, addShoreline,sitesShoreline,sitesShoreline2, addTransact,getLegend,addShorelineImage, getArea,getChartOptionsShoreline, addTVMarker} from "./helper";
 import {
   Button,Modal
 } from "react-bootstrap";
+//import {SimpleMapScreenshoter} from 'leaflet-simple-map-screenshoter';
+import { useGlobalState,setGlobalState } from './globalstate';
+import {toast} from 'react-toastify';
 /*
 import {
   Chart as ChartJS,
@@ -117,6 +120,7 @@ const [data, setData] = useState( {
   ],
 });
 
+const nameer = useGlobalState("island_name");
   
   //VARIABLES
   const [display, setDisplay] = useState(false);
@@ -124,10 +128,11 @@ const [data, setData] = useState( {
   const checkedRef = useRef(false);
   const [input, setInput] = useState(true);
   const displayRef = useRef(false);
-  const layer = useRef();
-  const layer2 = useRef();
-  const staelliteLayer = useRef();
-  const staelliteLayer2 = useRef();
+  const layer = useRef(null);
+  const layer2 = useRef(null);
+  const layer3 = useRef(null);
+  const staelliteLayer = useRef(null);
+  const staelliteLayer2 = useRef(null);
   const sidebyside = useRef();
   const baseLayer = useRef();
   const legendRef = useRef();
@@ -137,7 +142,7 @@ const [data, setData] = useState( {
   const mapContainer = React.useRef(null);
   const url = "https://tds-test.pacificdata.org/thredds/wms/Oceans/TCAP/";
 //  const baselayerurl = "https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png";
-  const siteRef = useRef("Nanumaga");
+  const siteRef = useRef(nameer[0]);
   const imageRef = useRef("2021");
   const [years, setYears] = useState([]);
   const [yearsCheck, setYearsCheck] = useState([]);
@@ -213,9 +218,6 @@ chartOptions(siteName, Math.round(minVal * 10) / 10, Math.round(maxVal * 10) / 1
 };
   function initMap(url){
 
-  setYears(sitesShoreline())
-
-  setYearsCheck(sitesShoreline2())
 
     baseLayer.current = L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
       attribution: '&copy; Pacific Community (OSM)',
@@ -225,17 +227,46 @@ chartOptions(siteName, Math.round(minVal * 10) / 10, Math.round(maxVal * 10) / 1
   
   mapContainer.current = L.map('map', {
     zoom: 7,
-    center: [-6.287321, 176.320346]
+    center: [-7.87321, 178.320346]
   });
 
-  layer2.current = getArea(mapContainer.current, siteRef.current).on('click', function(e) {onClickShow2(siteRef.current)});
+  //layer2.current = getArea(mapContainer.current, siteRef.current).on('click', function(e) {onClickShow2(siteRef.current)});
 
   mapContainer.current.createPane('left');
   mapContainer.current.createPane('right');
   baseLayer.current.addTo(mapContainer.current); 
   //layer.current = addTransact(mapContainer.current, siteRef.current, "2021", 'left')
   //layer.current = addShoreline(mapContainer.current, siteRef.current, "2021", 'left')
+ // staelliteLayer.current = addShorelineImage(mapContainer.current, siteRef.current, "image", 'left','2019')
+
+  if (nameer[0] === "Tuvalu"){
+
+
+    toast.info('Click on marker to zoom.', {position: toast.POSITION.BOTTOM_CENTER, autoClose:6000})
+    layer3.current = addTVMarker(mapContainer.current, "Nanumaga").on('click', function(e) {onClickShow3('Nanumaga')}).bindTooltip("Nanumaga", {permanent:true,opacity:0.65});
+    layer3.current = addTVMarker(mapContainer.current, "Nanumea").on('click', function(e) {onClickShow3('Nanumea')}).bindTooltip("Nanumea", {permanent:true,opacity:0.65});
+    layer3.current = addTVMarker(mapContainer.current, "Funafuti").on('click', function(e) {onClickShow3('Funafuti')}).bindTooltip("Funafuti", {permanent:true,opacity:0.65});
+    layer3.current = addTVMarker(mapContainer.current, "Nui").on('click', function(e) {onClickShow3('Nui')}).bindTooltip("Nui", {permanent:true,opacity:0.65});
+    layer3.current = addTVMarker(mapContainer.current, "Nukufetau").on('click', function(e) {onClickShow3('Nukufetau')}).bindTooltip("Nukufetau", {permanent:true,opacity:0.65});
+    layer3.current = addTVMarker(mapContainer.current, "Niutao").on('click', function(e) {onClickShow3('Niutao')}).bindTooltip("Niutao", {permanent:true,opacity:0.65});
+    layer3.current = addTVMarker(mapContainer.current, "Nukulaelae").on('click', function(e) {onClickShow3('Nukulaelae')}).bindTooltip("Nukulaelae", {permanent:true,opacity:0.65});
+    layer3.current = addTVMarker(mapContainer.current, "Vaitupu").on('click', function(e) {onClickShow3('Vaitupu')}).bindTooltip("Vaitupu", {permanent:true,opacity:0.65});
+    layer3.current = addTVMarker(mapContainer.current, "Niulakita").on('click', function(e) {onClickShow3('Niulakita')}).bindTooltip("Niulakita", {permanent:true,opacity:0.65});
+    }
+    else{
+      toast.success('Click on marker to view Area of Change Plot.', {position: toast.POSITION.BOTTOM_CENTER, autoClose:8000,style:{width: "130%"}})
+ 
+  setYears(sitesShoreline())
+
+  setYearsCheck(sitesShoreline2())
+    
   staelliteLayer.current = addShorelineImage(mapContainer.current, siteRef.current, "image", 'left','2019')
+
+  layer2.current = getArea(mapContainer.current, siteRef.current).on('click', function(e) {onClickShow2(siteRef.current)});
+      mayFlyer(mapContainer.current, siteRef.current);
+    } 
+
+
   mayFlyer(mapContainer.current, siteRef.current);
   //LEGENDD
   
@@ -278,6 +309,7 @@ chartOptions(siteName, Math.round(minVal * 10) / 10, Math.round(maxVal * 10) / 1
 
   
   });
+L.simpleMapScreenshoter().addTo(mapContainer.current);
   }
 useEffect(() => { 
 if (_isMounted.current){
@@ -378,8 +410,85 @@ if (index >= 0) {
   e.currentTarget.blur()
 };
 
+const onClickShow3= async(siteName) => {
+  siteRef.current = siteName;
+  toast.success('Click on marker to view Area of Change Plot.', {position: toast.POSITION.BOTTOM_CENTER, autoClose:8000,style:{width: "130%"}})
+  if(layer.current !== null){
+      mapContainer.current.removeLayer(layer.current);
+  }
+  if(layer2.current !== null){
+      mapContainer.current.removeLayer(layer2.current);
+  }
+  if(staelliteLayer.current !== null){
+      mapContainer.current.removeLayer(staelliteLayer.current);
+  }
+     
+      if(checked === true){
+        mapContainer.current.removeControl(sidebyside.current);
+        mapContainer.current.removeLayer(layer2.current);
+       }
+  
+    mayFlyer(mapContainer.current, siteName);
+
+
+   mapContainer.current.eachLayer(function (layer) {
+    const layername = layer.options.id;
+    console.log(layername)
+    if(layername === 777){
+      mapContainer.current.removeLayer(layer);
+    }
+  });
+  staelliteLayer.current = addShorelineImage(mapContainer.current, siteName, "image", 'left','2019')
+ 
+    setYears(sitesShoreline())
+
+  //setYearsCheck(sitesShoreline2())
+  layer2.current = getArea(mapContainer.current, siteName).on('click', function(e) {onClickShow2(siteName)});
+   
+   setGlobalState("island_name", siteName);
+};
+
 
 const handleSite=(e)=>{
+  if (e.target.value === "Tuvalu"){
+    
+    toast.info('Click on marker to zoom.', {position: toast.POSITION.BOTTOM_CENTER, autoClose:6000})
+    if(layer.current !== null){
+        mapContainer.current.removeLayer(layer.current);
+    }
+    if(layer2.current !== null){
+        mapContainer.current.removeLayer(layer2.current);
+    }
+    if(staelliteLayer.current !== null){
+        mapContainer.current.removeLayer(staelliteLayer.current);
+    }
+        layer3.current = addTVMarker(mapContainer.current, "Nanumaga").on('click', function(e) {onClickShow3('Nanumaga')}).bindTooltip("Nanumaga", {permanent:true,opacity:0.65});
+        layer3.current = addTVMarker(mapContainer.current, "Nanumea").on('click', function(e) {onClickShow3('Nanumea')}).bindTooltip("Nanumea", {permanent:true,opacity:0.65});
+        layer3.current = addTVMarker(mapContainer.current, "Funafuti").on('click', function(e) {onClickShow3('Funafuti')}).bindTooltip("Funafuti", {permanent:true,opacity:0.65});
+        layer3.current = addTVMarker(mapContainer.current, "Nui").on('click', function(e) {onClickShow3('Nui')}).bindTooltip("Nui", {permanent:true,opacity:0.65});
+        layer3.current = addTVMarker(mapContainer.current, "Nukufetau").on('click', function(e) {onClickShow3('Nukufetau')}).bindTooltip("Nukufetau", {permanent:true,opacity:0.65});
+        layer3.current = addTVMarker(mapContainer.current, "Niutao").on('click', function(e) {onClickShow3('Niutao')}).bindTooltip("Niutao", {permanent:true,opacity:0.65});
+        layer3.current = addTVMarker(mapContainer.current, "Nukulaelae").on('click', function(e) {onClickShow3('Nukulaelae')}).bindTooltip("Nukulaelae", {permanent:true,opacity:0.65});
+        layer3.current = addTVMarker(mapContainer.current, "Vaitupu").on('click', function(e) {onClickShow3('Vaitupu')}).bindTooltip("Vaitupu", {permanent:true,opacity:0.65});
+        layer3.current = addTVMarker(mapContainer.current, "Niulakita").on('click', function(e) {onClickShow3('Niulakita')}).bindTooltip("Niulakita", {permanent:true,opacity:0.65});
+    
+        if(checked === true){
+          mapContainer.current.removeControl(sidebyside.current);
+          mapContainer.current.removeLayer(layer2.current);
+         }
+          setYears([])
+      mayFlyer(mapContainer.current, 'Tuvalu');
+      }
+  else{
+
+    toast.success('Click marker to view Area of Change Plot.', {position: toast.POSITION.BOTTOM_CENTER, autoClose:8000, style:{width: "130%"}})
+    mapContainer.current.eachLayer(function (layer) {
+      const layername = layer.options.id;
+      console.log(layername)
+      if(layername === 777){
+        mapContainer.current.removeLayer(layer);
+      }
+    });
   setYears(sitesShoreline())
   setIsCheckAll(false);
   setInput(!input);
@@ -416,7 +525,9 @@ else{
 // layer.current = addShoreline(mapContainer.current, siteRef.current, "2018", 'left')
   mayFlyer(mapContainer.current, siteRef.current);
   staelliteLayer.current = addShorelineImage(mapContainer.current, siteRef.current, "image", 'left','2019')
+  }
 
+  setGlobalState("island_name", e.target.value);
 }
 
 
@@ -606,7 +717,8 @@ const handleSubmit=(e)=>{
     <p>Sites:</p>
       </div>
       <div className="col-sm-6">
-      <select className="form-select form-select-sm" aria-label=".form-select-sm example" onChange={handleSite} style={{fontSize:'13px', paddingLeft:1}}>
+      <select className="form-select form-select-sm" value={nameer[0]} aria-label=".form-select-sm example" onChange={handleSite} style={{fontSize:'13px', paddingLeft:1}}>
+      <option value="Tuvalu">Tuvalu</option>
       <option value="Nanumaga">Nanumaga</option>
   <option value="Nanumea">Nanumea</option>
   <option value="Funafuti">Funafuti</option>

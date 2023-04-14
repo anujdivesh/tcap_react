@@ -7,7 +7,7 @@ import '../node_modules/leaflet-timedimension/dist/leaflet.timedimension.control
 import '../node_modules/leaflet-timedimension/dist/leaflet.timedimension.min.js';
 import '../node_modules/leaflet-draw/dist/leaflet.draw.css';
 import '../node_modules/leaflet-draw/dist/leaflet.draw.js';
-
+import '../node_modules/leaflet-simple-map-screenshoter/dist/leaflet-simple-map-screenshoter.js';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';

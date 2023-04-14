@@ -43,7 +43,7 @@ map.eachLayer(function (lyr) {
                 map.flyTo([-7.4742, 178.67456], 14);
                 }
                 if (site === "Tuvalu"){
-                  map.flyTo([-8, 178.3053], 7);
+                  map.flyTo([-7.87321, 178.320346], 7);
                   }
 });
 }
@@ -192,6 +192,66 @@ export function getArea(map, site) {
                     }
         var layer = L.marker(latlng,{icon:redIcon,id:999}).addTo(map);//.openPopup();
   return layer;
+
+
+}
+
+
+
+export function addTVMarker(map, site) {
+  
+  const redIcon = new L.Icon({
+    iconUrl:
+      "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png",
+    shadowUrl:
+      "https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png",
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41]
+  });
+
+  var latlng;
+      if (site === "Nanumanga"){
+        latlng = [-6.287321, 176.320346];
+      }
+      if (site === "Nanumaga"){
+        latlng = [-6.287321, 176.320346];
+        }
+      if (site === "Nanumea"){
+        latlng = [-5.669055, 176.110211];
+      }
+      if (site === "Niulakita"){
+        latlng = [-10.788939, 179.472849];
+        }
+        if (site === "Funafuti"){
+          latlng = [-8.518118, 179.118515];
+          }
+
+          if (site === "Fongafale"){
+            latlng = [-8.521147, 179.196198];
+            }
+          if (site === "Niutao"){
+            latlng = [-6.10717, 177.34215];
+            }
+            if (site === "Nui"){
+              latlng = [-7.23247, 177.15205];
+              }
+              if (site === "Nukufetau"){
+                latlng = [-8.017857, 178.362114];
+                }
+              if (site === "Nukulaelae"){
+                latlng = [-9.38412, 179.84559];
+                }
+                if (site === "Vaitupu"){
+                  latlng = [-7.4742, 178.67456];
+                  }
+                  if (site === "Tuvalu"){
+                    latlng = [-8, 178.3053];
+                    }
+        var layer = L.marker(latlng,{icon:redIcon,id:777}).addTo(map);//.openPopup();
+  return layer;
+
   }
 
 export function getMarker(map, site, url,assetRef,typeRef,siteRef,yearRef,climateRef,presentBoolRef,horizonRef,display3,country) {

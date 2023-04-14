@@ -2,28 +2,35 @@ import React, { useEffect, useState, useRef } from 'react';
 import L from 'leaflet';
 import "leaflet-side-by-side";
 import "./L.TileLayer.BetterWMS";
-import {mayFlyer, addLayer,addShorelineImagenoPaneGen} from "./helper";
-
+import {mayFlyer, addLayer,addShorelineImagenoPaneGen, addTVMarker} from "./helper";
+//import {SimpleMapScreenshoter} from 'leaflet-simple-map-screenshoter';
+import { setGlobalState, useGlobalState } from './globalstate';
+import {toast} from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+ 
+toast.configure()
 const About = () => {
 
   //VARIABLES
   const [display, setDisplay] = useState(false);
   const displayRef = useRef(false);
-  const layer = useRef();
-  const shorelineLayer = useRef();
+  const layer = useRef(null);
+  const shorelineLayer = useRef(null);
   const baseLayer = useRef();
-  const layer2 = useRef();
+  const layer2 = useRef(null);
+  const layer3 = useRef(null);
   const sidebyside = useRef();
   const _isMounted = useRef(true);
   const mapContainer = React.useRef(null);
   const [checked, setChecked] = React.useState(false);
  // const url = "http://149.28.173.12/thredds/wms/Oceans/TCAP/final/";
 
+ const nameer = useGlobalState("island_name");
   const url = "https://tds-test.pacificdata.org/thredds/wms/Oceans/TCAP/final/"
   const yearRef = useRef(5);
   const yearRef2 = useRef(5);
-  const siteRef = useRef("Nanumaga");
-  const siteRef2 = useRef("Nanumaga");
+  const siteRef = useRef(nameer[0]);
+  const siteRef2 = useRef(nameer[0]);
   const horizonRef = useRef("2060");
   const horizonRef2 = useRef("2060");
   const climateRef = useRef("SSP2");
@@ -31,7 +38,10 @@ const About = () => {
   const presentBoolRef = useRef(true);
   const presentBoolRef2 = useRef(false);
   const legendColorRef = useRef();
+
   const pointerRef = useRef(1);
+  const pointerRef2 = useRef(0);
+  const [ value2, setValue2 ] = React.useState(pointerRef2.current);
   const [ value, setValue ] = React.useState(pointerRef.current);
   //const [pointer, setPointer] = useState(pointerRef.current);
   
@@ -54,14 +64,13 @@ const About = () => {
   
   mapContainer.current = L.map('map', {
     zoom: 7,
-    center: [-6.287321, 176.320346]
+    center: [-7.87321, 178.320346]
   });
   baseLayer.current.addTo(mapContainer.current); 
-  //shorelineLayer.current = addShorelineImagenoPane(mapContainer.current, siteRef.current, "2021")
-  shorelineLayer.current = addShorelineImagenoPaneGen(mapContainer.current, siteRef.current)
+ // shorelineLayer.current = addShorelineImagenoPaneGen(mapContainer.current, siteRef.current)
 
-  layer.current = addLayer(mapContainer.current, url, siteRef.current, yearRef.current,horizonRef.current,climateRef.current,presentBoolRef.current,pointerRef.current)
-  mayFlyer(mapContainer.current, siteRef.current);
+  //layer.current = addLayer(mapContainer.current, url, siteRef.current, yearRef.current,horizonRef.current,climateRef.current,presentBoolRef.current,pointerRef.current)
+  //mayFlyer(mapContainer.current, siteRef.current);
   
   //LEGENDD
   
@@ -80,7 +89,36 @@ const About = () => {
   }
   
   });
-  }
+/*
+  mapContainer.current.on('zoomend',function(e){
+   console.log(e.sourceTarget)
+  });
+*/
+L.simpleMapScreenshoter().addTo(mapContainer.current);
+
+
+
+if (nameer[0] === "Tuvalu"){
+
+
+toast.info('Click on marker to zoom.', {position: toast.POSITION.BOTTOM_CENTER, autoClose:6000})
+layer3.current = addTVMarker(mapContainer.current, "Nanumaga").on('click', function(e) {onClickShow2('Nanumaga')}).bindTooltip("Nanumaga", {permanent:true,opacity:0.65});
+layer3.current = addTVMarker(mapContainer.current, "Nanumea").on('click', function(e) {onClickShow2('Nanumea')}).bindTooltip("Nanumea", {permanent:true,opacity:0.65});
+layer3.current = addTVMarker(mapContainer.current, "Funafuti").on('click', function(e) {onClickShow2('Funafuti')}).bindTooltip("Funafuti", {permanent:true,opacity:0.65});
+layer3.current = addTVMarker(mapContainer.current, "Nui").on('click', function(e) {onClickShow2('Nui')}).bindTooltip("Nui", {permanent:true,opacity:0.65});
+layer3.current = addTVMarker(mapContainer.current, "Nukufetau").on('click', function(e) {onClickShow2('Nukufetau')}).bindTooltip("Nukufetau", {permanent:true,opacity:0.65});
+layer3.current = addTVMarker(mapContainer.current, "Niutao").on('click', function(e) {onClickShow2('Niutao')}).bindTooltip("Niutao", {permanent:true,opacity:0.65});
+layer3.current = addTVMarker(mapContainer.current, "Nukulaelae").on('click', function(e) {onClickShow2('Nukulaelae')}).bindTooltip("Nukulaelae", {permanent:true,opacity:0.65});
+layer3.current = addTVMarker(mapContainer.current, "Vaitupu").on('click', function(e) {onClickShow2('Vaitupu')}).bindTooltip("Vaitupu", {permanent:true,opacity:0.65});
+layer3.current = addTVMarker(mapContainer.current, "Niulakita").on('click', function(e) {onClickShow2('Niulakita')}).bindTooltip("Niulakita", {permanent:true,opacity:0.65});
+}
+else{
+  shorelineLayer.current = addShorelineImagenoPaneGen(mapContainer.current, siteRef.current)
+
+  layer.current = addLayer(mapContainer.current, url, siteRef.current, yearRef.current,horizonRef.current,climateRef.current,presentBoolRef.current,pointerRef.current)
+  mayFlyer(mapContainer.current, siteRef.current);
+} 
+}
 useEffect(() => {  
   
 if (_isMounted.current){
@@ -136,22 +174,12 @@ const handleYear2=(e)=>{
  //  mayFlyer(mapContainer.current, siteRef.current);
    }
  }
-/*
- const handleSite2=(e)=>{
-  siteRef2.current = e.target.value;
-  mapContainer.current.removeControl(sidebyside.current);
-  mapContainer.current.removeLayer(layer2.current);
-  layer2.current = addLayer(mapContainer.current, url, siteRef2.current, yearRef2.current,horizonRef2.current,climateRef2.current,presentBoolRef.current,pointerRef.current);
-  sidebyside.current = L.control.sideBySide(layer.current, layer2.current).addTo(mapContainer.current);
-  mayFlyer(mapContainer.current, siteRef.current);
-}
 
-*/
-const handleSite=(e)=>{
-  siteRef.current = e.target.value;
-  siteRef2.current = e.target.value;
-  mapContainer.current.removeLayer(layer.current);
-  mapContainer.current.removeLayer(shorelineLayer.current);
+const onClickShow2= async(siteName) => {
+  siteRef.current = siteName;
+  siteRef2.current = siteName;
+ // mapContainer.current.removeLayer(layer.current);
+ // mapContainer.current.removeLayer(shorelineLayer.current);
   shorelineLayer.current = addShorelineImagenoPaneGen(mapContainer.current, siteRef.current)
   console.log(siteRef.current)
   layer.current = addLayer(mapContainer.current, url, siteRef.current, yearRef.current,horizonRef.current,climateRef.current,presentBoolRef.current,pointerRef.current)
@@ -163,6 +191,71 @@ const handleSite=(e)=>{
     layer2.current = addLayer(mapContainer.current, url, siteRef2.current, yearRef2.current,horizonRef2.current,climateRef2.current,presentBoolRef.current,pointerRef.current)
     sidebyside.current = L.control.sideBySide(layer.current, layer2.current).addTo(mapContainer.current);
    }
+   mapContainer.current.eachLayer(function (layer) {
+    const layername = layer.options.id;
+    console.log(layername)
+    if(layername === 777){
+      mapContainer.current.removeLayer(layer);
+    }
+  });
+   
+   setGlobalState("island_name", siteName);
+};
+
+const handleSite=(e)=>{
+  if (e.target.value === "Tuvalu"){
+    
+toast.info('Click on marker to zoom.', {position: toast.POSITION.BOTTOM_CENTER, autoClose:6000})
+    mapContainer.current.removeLayer(layer.current);
+    mapContainer.current.removeLayer(shorelineLayer.current);
+    layer3.current = addTVMarker(mapContainer.current, "Nanumaga").on('click', function(e) {onClickShow2('Nanumaga')}).bindTooltip("Nanumaga", {permanent:true,opacity:0.65});
+    layer3.current = addTVMarker(mapContainer.current, "Nanumea").on('click', function(e) {onClickShow2('Nanumea')}).bindTooltip("Nanumea", {permanent:true,opacity:0.65});
+    layer3.current = addTVMarker(mapContainer.current, "Funafuti").on('click', function(e) {onClickShow2('Funafuti')}).bindTooltip("Funafuti", {permanent:true,opacity:0.65});
+    layer3.current = addTVMarker(mapContainer.current, "Nui").on('click', function(e) {onClickShow2('Nui')}).bindTooltip("Nui", {permanent:true,opacity:0.65});
+    layer3.current = addTVMarker(mapContainer.current, "Nukufetau").on('click', function(e) {onClickShow2('Nukufetau')}).bindTooltip("Nukufetau", {permanent:true,opacity:0.65});
+    layer3.current = addTVMarker(mapContainer.current, "Niutao").on('click', function(e) {onClickShow2('Niutao')}).bindTooltip("Niutao", {permanent:true,opacity:0.65});
+    layer3.current = addTVMarker(mapContainer.current, "Nukulaelae").on('click', function(e) {onClickShow2('Nukulaelae')}).bindTooltip("Nukulaelae", {permanent:true,opacity:0.65});
+    layer3.current = addTVMarker(mapContainer.current, "Vaitupu").on('click', function(e) {onClickShow2('Vaitupu')}).bindTooltip("Vaitupu", {permanent:true,opacity:0.65});
+    layer3.current = addTVMarker(mapContainer.current, "Niulakita").on('click', function(e) {onClickShow2('Niulakita')}).bindTooltip("Niulakita", {permanent:true,opacity:0.65});
+
+    if(checked === true){
+      mapContainer.current.removeControl(sidebyside.current);
+      mapContainer.current.removeLayer(layer2.current);
+     }
+
+  mayFlyer(mapContainer.current, 'Tuvalu');
+  }
+  else{
+  siteRef.current = e.target.value;
+  siteRef2.current = e.target.value;
+  if(layer.current !== null){
+    mapContainer.current.removeLayer(layer.current);
+  }
+  if(shorelineLayer.current !== null){
+    mapContainer.current.removeLayer(shorelineLayer.current);
+  }
+  mapContainer.current.eachLayer(function (layer) {
+    const layername = layer.options.id;
+    console.log(layername)
+    if(layername === 777){
+      mapContainer.current.removeLayer(layer);
+    }
+  });
+  shorelineLayer.current = addShorelineImagenoPaneGen(mapContainer.current, siteRef.current)
+  console.log(siteRef.current)
+  layer.current = addLayer(mapContainer.current, url, siteRef.current, yearRef.current,horizonRef.current,climateRef.current,presentBoolRef.current,pointerRef.current)
+ 
+  if(checked === true){
+    mapContainer.current.removeControl(sidebyside.current);
+    mapContainer.current.removeLayer(layer2.current);
+    layer2.current = addLayer(mapContainer.current, url, siteRef2.current, yearRef2.current,horizonRef2.current,climateRef2.current,presentBoolRef.current,pointerRef.current)
+    sidebyside.current = L.control.sideBySide(layer.current, layer2.current).addTo(mapContainer.current);
+   }
+
+  mayFlyer(mapContainer.current, e.target.value);
+  }
+
+   setGlobalState("island_name", e.target.value);
 }
 const handleClick = (e) => {
   //Show layer
@@ -292,7 +385,6 @@ const [gender, setGender] = useState("SSP2");
 
 
   const slider = (e) => {
-    e.currentTarget.blur();
     setValue(e.target.value)
     //setPointer(e.target.value)
     pointerRef.current = e.target.value;
@@ -302,9 +394,63 @@ const [gender, setGender] = useState("SSP2");
     e.currentTarget.blur();
   }
 
+  const slidercm = (e) => {
+    setValue2(e.target.value)
+    //setPointer(e.target.value)
+    pointerRef2.current = e.target.value;
+    if (e.target.value === "0"){
+      pointerRef2.current = "present"
+    } 
+    if (e.target.value === "1"){
+      pointerRef2.current = "2060"
+    } 
+    if (e.target.value === "2"){
+      pointerRef2.current = "2100"
+    } 
+
+    setHorizon(pointerRef2.current);
+    horizonRef.current = pointerRef2.current
+    console.log(horizonRef.current);
+
+    if (pointerRef2.current !== "present"){
+      presentBoolRef.current = false;
+   // yearRef.current = e.target.value;
+  mapContainer.current.removeLayer(layer.current);
+  layer.current = addLayer(mapContainer.current, url, siteRef.current, yearRef.current,horizonRef.current,climateRef.current,presentBoolRef.current,pointerRef.current)
+ // mayFlyer(mapContainer.current, siteRef.current);
+
+  if(checked === true){
+    mapContainer.current.removeControl(sidebyside.current);
+    mapContainer.current.removeLayer(layer2.current);
+    layer2.current = addLayer(mapContainer.current, url, siteRef2.current, yearRef2.current,horizonRef2.current,climateRef2.current,presentBoolRef.current,pointerRef.current)
+    sidebyside.current = L.control.sideBySide(layer.current, layer2.current).addTo(mapContainer.current);
+   }
+  }
+  else{
+   // setHorizon2('present')
+    presentBoolRef.current = true;
+    mapContainer.current.removeLayer(layer.current);
+    layer.current = addLayer(mapContainer.current, url, siteRef.current, yearRef.current,horizonRef.current,climateRef.current,presentBoolRef.current,pointerRef.current)
+  // mayFlyer(mapContainer.current, siteRef.current);
+  
+    if(checked === true){
+      mapContainer.current.removeControl(sidebyside.current);
+      mapContainer.current.removeLayer(layer2.current);
+      layer2.current = addLayer(mapContainer.current, url, siteRef2.current, yearRef2.current,horizonRef2.current,climateRef2.current,presentBoolRef.current,pointerRef.current)
+      sidebyside.current = L.control.sideBySide(layer.current, layer2.current).addTo(mapContainer.current);
+     }
+  }
+
+
+    //mapContainer.current.removeLayer(layer.current);
+    //layer.current = addLayer(mapContainer.current, url, siteRef.current, yearRef.current,horizonRef.current,climateRef.current,presentBoolRef.current,e.target.value);
+    e.currentTarget.blur();
+  }
+
   return (
     <div className="container-fluid">
     <div className="row" style={{height:"93.5vh"}}>
+      
     <div className="col-sm-2"  style={{backgroundColor:"#efefef",padding:0}}>
     <div className="card">
     <div className="card-body" style={{fontSize:"13px"}}>
@@ -315,7 +461,8 @@ const [gender, setGender] = useState("SSP2");
     <p>Sites:</p>
       </div>
       <div className="col-sm-6">
-      <select className="form-select form-select-sm" aria-label=".form-select-sm example" onChange={handleSite} style={{fontSize:'13px', paddingLeft:1}}>
+      <select className="form-select form-select-sm" value={nameer[0]} aria-label=".form-select-sm example" onChange={handleSite} style={{fontSize:'13px', paddingLeft:1}}>
+      <option value="Tuvalu">Tuvalu</option>
   <option value="Nanumaga">Nanumaga</option>
   <option value="Nanumea">Nanumea</option>
   <option value="Funafuti">Funafuti</option>
@@ -374,7 +521,16 @@ const [gender, setGender] = useState("SSP2");
                 name="horizon" onChange={onChangeValueHorizon} checked={horizon === "2100"} />
              <label>2100</label>
              </div>
+              
       </div>
+      <div className="row">
+             <div className="col-sm-6">
+    <input type="range" className="form-range" onClick={(e) => e.currentTarget.blur()} min={0} max={2} step={1} id="refreshButton2" value={value2} onChange={slidercm} style={{height:'10px'}}/>
+      </div>
+      <div className="col-sm-6">
+       <p>{pointerRef2.current}cm</p>
+      </div>   
+      </div>   
       </div>
       <hr style={{marginTop:0}}/>
       <div className="row" style={{marginTop:'-10px'}}>
@@ -400,7 +556,7 @@ const [gender, setGender] = useState("SSP2");
       <div className="col-sm-4">
 <p>Opacity:</p> </div>
     <div className="col-sm-5">
-    <input type="range" className="form-range" min={0} max={1} step={0.1} id="refreshButton" value={value} onChange={slider} style={{height:'10px'}}/>
+    <input type="range" className="form-range" onClick={(e) => e.currentTarget.blur()} min={0} max={1} step={0.1} id="refreshButton" value={value} onChange={slider} style={{height:'10px'}}/>
       </div>
       <div className="col-sm-3">
        <p>{pointerRef.current*100}%</p>
