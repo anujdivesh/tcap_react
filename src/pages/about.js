@@ -40,8 +40,8 @@ const About = () => {
   const legendColorRef = useRef();
 
   const pointerRef = useRef(1);
-  const pointerRef2 = useRef(0);
-  const [ value2, setValue2 ] = React.useState(pointerRef2.current);
+ // const pointerRef2 = useRef(0);
+  //const [ value2, setValue2 ] = React.useState(pointerRef2.current);
   const [ value, setValue ] = React.useState(pointerRef.current);
   //const [pointer, setPointer] = useState(pointerRef.current);
   
@@ -393,7 +393,7 @@ const [gender, setGender] = useState("SSP2");
     layer.current = addLayer(mapContainer.current, url, siteRef.current, yearRef.current,horizonRef.current,climateRef.current,presentBoolRef.current,e.target.value);
     e.currentTarget.blur();
   }
-
+/*
   const slidercm = (e) => {
     setValue2(e.target.value)
     //setPointer(e.target.value)
@@ -446,7 +446,7 @@ const [gender, setGender] = useState("SSP2");
     //layer.current = addLayer(mapContainer.current, url, siteRef.current, yearRef.current,horizonRef.current,climateRef.current,presentBoolRef.current,e.target.value);
     e.currentTarget.blur();
   }
-
+*/
   return (
     <div className="container-fluid">
     <div className="row" style={{height:"93.5vh"}}>
@@ -523,6 +523,8 @@ const [gender, setGender] = useState("SSP2");
              </div>
               
       </div>
+      {/*
+      
       <div className="row">
              <div className="col-sm-6">
     <input type="range" className="form-range" onClick={(e) => e.currentTarget.blur()} min={0} max={2} step={1} id="refreshButton2" value={value2} onChange={slidercm} style={{height:'10px'}}/>
@@ -530,7 +532,8 @@ const [gender, setGender] = useState("SSP2");
       <div className="col-sm-6">
        <p>{pointerRef2.current}cm</p>
       </div>   
-      </div>   
+      </div>  
+ */}
       </div>
       <hr style={{marginTop:0}}/>
       <div className="row" style={{marginTop:'-10px'}}>
