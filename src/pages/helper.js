@@ -1,11 +1,11 @@
 import L from 'leaflet';
-
+import config from '../components/data/config.json'
 //const geoserverAddress = "http://services.gsd.spc.int:8089/";
-const geoserverAddress = "https://opm.gem.spc.int/";
+const geoserverAddress = config['geoserver-address'];
 
 //const cgiAddress = "http://services.gsd.spc.int:8080/";
 
-const cgiAddress = "https://opm.gem.spc.int/";
+const cgiAddress = config["cgi-address"];
 
 //const cgiAddress = "http://192.168.4.92/";
 
@@ -1304,6 +1304,11 @@ export function getYaxis(site, asset, type){
       arr.push(site+' Expected Damage')
       arr.push('Cost of Damage (Million US$)')
       arr.push('Annual recurrence interval (years)')
+    }
+    else if (type ==="annual"){
+      arr.push(site+' Annual Economic Damage')
+      arr.push('Cost of Damage (Million US$)')
+      arr.push('')
     }
     else{
       arr.push(site+' Percentage of '+asset+' damaged')

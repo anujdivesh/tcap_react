@@ -12,6 +12,7 @@ import {
 //import {SimpleMapScreenshoter} from 'leaflet-simple-map-screenshoter';
 import { useGlobalState,setGlobalState } from './globalstate';
 import {toast} from 'react-toastify';
+import config from '../components/data/config.json'
 /*
 import {
   Chart as ChartJS,
@@ -147,6 +148,7 @@ const nameer = useGlobalState("island_name");
   const [years, setYears] = useState([]);
   const [yearsCheck, setYearsCheck] = useState([]);
   const yearRef = useRef(2019);
+  const baseurl = config['cgi-address'];
 
   //MOdel
 
@@ -161,7 +163,7 @@ const [isCheckAll, setIsCheckAll] = useState(false);
 const onClickShow2= async(siteName) => {
 
   //Dummy test start
-  const url = "https://opm.gem.spc.int/cgi-bin/area/areaofchange.py?island="+siteName;
+  const url = baseurl+"cgi-bin/area/areaofchange.py?island="+siteName;
   
 
 var SSP852060 = [];

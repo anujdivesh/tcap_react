@@ -14,7 +14,8 @@ import {
   Legend,
 } from 'chart.js';
 import { Bar} from 'react-chartjs-2';
-
+import config from '../components/data/config.json'
+import { useGlobalState,setGlobalState } from './globalstate';
 const Report = () => {
  
   ChartJS.register(
@@ -35,7 +36,7 @@ const Report = () => {
       }
   }
   );
-
+  const nameer = useGlobalState("island_name");
   const shorelineLayer = useRef();
   const baseLayer = useRef();
   //const layer2 = useRef();
@@ -43,13 +44,17 @@ const Report = () => {
   const mapContainer = React.useRef(null);
   //const url_risk = "https://opm.gem.spc.int/tcap/risk-plots";
   const yearRef = useRef(5);
-  const siteRef = useRef("Tuvalu");
+
+  const siteRef = useRef(nameer[0]);
   const horizonRef = useRef("2060");
   const climateRef = useRef("SSP2");
   const presentBoolRef = useRef(true);
   const [abool, setabool] = useState(false);
   const [economicbool, seteconomicbool] = useState(false);
   const [expo, setExpo] = useState(true);
+  const [disableannual, setdisableannual] = useState(true);
+  const [disableannual2, setdisableannual2] = useState(true);
+  const [disableannual3, setdisableannual3] = useState(false);
   const assetRef = useRef("population");
   const typeRef = useRef("exposed");
   const siteRefBool = useRef(true);
@@ -60,7 +65,8 @@ const Report = () => {
   const [display2, setDisplay2] = useState(false);
   const [display3, setDisplay3] = useState(false);
   const [chartOptionsData, setChartOptionsData] = useState(getChartOptions);
-
+  const baseurl = config['cgi-address']
+  
   const chartOptions = (title, ylabel, xlabel, bool, isStacked) => {
     var yy ={
       min: 0,
@@ -187,8 +193,8 @@ const Report = () => {
   };
 */
   const fetchData= async(island, varib,yaxis,bool,isStacked)=> {
-    const url = "https://opm.gem.spc.int/cgi-bin/Risk/test2.py?island="+island+"&var="+varib;
-    console.log(url)
+    const url = baseurl+"cgi-bin/Risk/test2.py?island="+island+"&var="+varib;
+    //console.log(url)
     var presentArr = [];
 var SSP452060 = [];
 var SSP452100 = [];
@@ -292,6 +298,154 @@ var SSP852100 = [];
      })
  }
 
+ const fetchDataAnnualNational= async(island, varib,yaxis,bool,isStacked)=> {
+  const url = baseurl+"cgi-bin/Risk/annual.py?island=Tuvalu&var=Annual_Economic_Damage";
+
+await fetch(url).then((data)=> {
+    const res = data.json();
+    return res
+}).then((res) => {
+  const present = res[0]['present'];
+  const ssp4_2060 = res[0]['ssp4_2060'];
+  const ssp4_2100 = res[0]['ssp4_2100'];
+  const ssp8_2060 = res[0]['ssp8_2060'];
+  const ssp8_2100 = res[0]['ssp8_2100'];
+
+  chartOptions(yaxis[0], yaxis[1], yaxis[2], bool,isStacked)
+
+  var stack1 = 'Stack 1';
+  var stack0 = 'Stack 0';
+  var stack3 = 'Stack 0';
+  var stack2 = 'Stack 2';
+  var stack4 = 'Stack 2';
+  if (!isStacked){
+    stack3 = 'Stack 3';
+    stack4 = 'Stack 4';
+  }
+   setData({
+    labels:["Tuvalu"],
+    datasets:[{
+      label:'Present',
+      backgroundColor: '#fd7f6f',
+      stack: stack1,
+      data:[present]
+    
+    },
+    {
+    label:'SSP2-4.5(2060)',
+    backgroundColor: '#7eb0d5',
+    stack: stack0,
+    data:[ssp4_2060]
+
+  },
+  {
+    label:'SSP2-8.5(2100)',
+    backgroundColor: '#b2e061',
+    stack: stack3,
+    data:[ssp4_2100]
+
+},
+{
+  label:'SSP2-4.5(2060)',
+  backgroundColor: '#bd7ebe',
+  stack: stack2,
+  data:[ssp8_2060]
+
+},
+{
+  label:'SSP2-8.5(2100)',
+  backgroundColor: '#ffb55a',
+  stack: stack4,
+  data:[ssp8_2100]
+
+}]
+})
+}).catch(e => {
+       console.log("error", e)
+   })
+}
+
+const fetchDataAnnualIsland= async(island, varib,yaxis,bool,isStacked)=> {
+  const url = baseurl+"cgi-bin/Risk/annual.py?island=island&var=Annual_Economic_Damage";
+  var presentArr = [];
+  var SSP452060 = [];
+  var SSP452100 = [];
+  var SSP852060 = [];
+  var SSP852100 = [];
+await fetch(url).then((data)=> {
+    const res = data.json();
+    return res
+}).then((res) => {
+
+    for (let i = 0; i < res.length; ++i){
+      var present = res[i]['present'];
+      var ssp4_2060 = res[i]['ssp4_2060'];
+      var ssp4_2100 = res[i]['ssp4_2100'];
+      var ssp8_2060 = res[i]['ssp8_2060'];
+      var ssp8_2100 = res[i]['ssp8_2100'];
+      
+      presentArr.push(present)
+      SSP452060.push(ssp4_2060)
+      SSP452100.push(ssp4_2100)
+      SSP852060.push(ssp8_2060)
+      SSP852100.push(ssp8_2100)
+    }
+
+  chartOptions(yaxis[0], yaxis[1], yaxis[2], bool,isStacked)
+
+  var stack1 = 'Stack 1';
+  var stack0 = 'Stack 0';
+  var stack3 = 'Stack 0';
+  var stack2 = 'Stack 2';
+  var stack4 = 'Stack 2';
+  if (!isStacked){
+    stack3 = 'Stack 3';
+    stack4 = 'Stack 4';
+  }
+   setData({
+    labels:["Funafuti","Nanumea","Nanumaga","Nui","Niutao","Niulakita","Nukulaelae","Nukufetau","Vaitupu"],
+    datasets:[{
+      label:'Present',
+      backgroundColor: '#fd7f6f',
+      stack: stack1,
+      data:presentArr
+    
+    },
+    {
+    label:'SSP2-4.5(2060)',
+    backgroundColor: '#7eb0d5',
+    stack: stack0,
+    data:SSP452060
+
+  },
+  {
+    label:'SSP2-8.5(2100)',
+    backgroundColor: '#b2e061',
+    stack: stack3,
+    data:SSP452100
+
+},
+{
+  label:'SSP2-4.5(2060)',
+  backgroundColor: '#bd7ebe',
+  stack: stack2,
+  data:SSP852060
+
+},
+{
+  label:'SSP2-8.5(2100)',
+  backgroundColor: '#ffb55a',
+  stack: stack4,
+  data:SSP852100
+
+}]
+})
+
+}).catch(e => {
+       console.log("error", e)
+   })
+}
+
  const fetchDataCountry= async(retur, asset, type, horizon, gender,yaxis,bool,isStacked)=> {
   var namee = gender+"-";
   if (gender === 'SSP2'){
@@ -306,7 +460,7 @@ var SSP852100 = [];
   else{
     namee+=horizon+")";
   }
-  const url = "https://opm.gem.spc.int/cgi-bin/Risk/country.py?island="+retur+"&var="+asset+"_"+type+"&scenario="+namee;
+  const url = baseurl+"cgi-bin/Risk/country.py?island="+retur+"&var="+asset+"_"+type+"&scenario="+namee;
   var presentArr = [];
 await fetch(url).then((data)=> {
     const res = data.json();
@@ -318,7 +472,7 @@ await fetch(url).then((data)=> {
     presentArr.push(prev)
 
   }
-  console.log(yaxis)
+ // console.log(yaxis)
   //var title = yaxis[0]+" ["+retur+" year "+namee+"]";
   var title = yaxis[0]+" ["+retur+" year]";
   chartOptions(title, yaxis[1], yaxis[2], bool,isStacked)
@@ -350,7 +504,7 @@ await fetch(url).then((data)=> {
      });
      baseLayer.current.addTo(mapContainer.current); 
    //  layer2.current =  getMarker(mapContainer.current, siteRef.current, url_risk,assetRef.current,typeRef.current,siteRef.current,yearRef.current,climateRef.current,presentBoolRef.current,horizonRef.current,display3,country)
-
+  
 shorelineLayer.current = addShorelineImagenoPaneGen(mapContainer.current, siteRef.current)
 mayFlyer(mapContainer.current, siteRef.current);
 
@@ -360,8 +514,8 @@ mayFlyer(mapContainer.current, siteRef.current);
    if (_isMounted.current){
    
      initMap();
-     
-fetchDataCountry(yearRef.current, asset,type,horizon, gender, getYaxis('Tuvalu',asset,type),true, true);
+   handleSite2(nameer[0])
+//fetchDataCountry(yearRef.current, asset,type,horizon, gender, getYaxis('Tuvalu',asset,type),true, true);
    }  
    return () => { _isMounted.current = false }; 
    },[]);
@@ -372,6 +526,8 @@ const handleSite=(e)=>{
   //chartOptions('Anuj Divesh')
   siteRef.current = e.target.value;
   setHorizon('present')
+
+  setdisableannual(true)
   if (e.target.value !== "Tuvalu"){
    // setCountry('island')
     setDisplayShape(true)
@@ -395,6 +551,7 @@ const handleSite=(e)=>{
   }
   setAsset('population')
   setType('exposed')
+ // setdisableannual(true)
   setExpo(true)
   fetchData(e.target.value, "population_exposed", getYaxis(e.target.value,'population','exposed'),true,true);
 
@@ -435,9 +592,81 @@ const handleSite=(e)=>{
       }
    });
   }
-   
+  setGlobalState("island_name", e.target.value);
 }
 
+const handleSite2=(e)=>{
+  //var random = Array.from({length: 3}, () => Math.floor(Math.random() * 40));
+    //chart(random);
+    //chartOptions('Anuj Divesh')
+    siteRef.current = e;
+    setHorizon('present')
+    if (e !== "Tuvalu"){
+     // setCountry('island')
+      setDisplayShape(true)
+      setDisplay2(true)
+      setDisplay3(true)
+      if (assetRef.current === "population"){
+        setExpo(true)
+      }
+      else{
+        setExpo(false)
+      }
+  
+    }
+    else{
+      setDisplay2(false)
+      setDisplay3(true)
+      setDisplayShape(false)
+      setExpo(false)
+      setCountry('island')
+  
+    }
+    setAsset('population')
+    setType('exposed')
+    setExpo(true)
+    fetchData(e, "population_exposed", getYaxis(e,'population','exposed'),true,true);
+  
+  
+  
+    if (e !== "Tuvalu"){
+      //setDisplay2(true)
+      siteRefBool.current = false;
+     
+    }
+    else{
+      //setDisplay2(false)
+      siteRefBool.current = true;
+      
+    }
+  
+    seteconomicbool(false)
+    if (shorelineLayer.current != null){
+    mapContainer.current.removeLayer(shorelineLayer.current);
+    }
+   // if (layer2.current != null){
+     // mapContainer.current.removeLayer(layer2.current);
+      //}
+    shorelineLayer.current = addShorelineImagenoPaneGen(mapContainer.current, siteRef.current)
+    //layer2.current =  getMarker(mapContainer.current, siteRef.current, url_risk,assetRef.current,typeRef.current,siteRef.current,yearRef.current,climateRef.current,presentBoolRef.current,horizonRef.current,display3,country)
+    mayFlyer(mapContainer.current, siteRef.current);
+  
+    if (e !== "Tuvalu"){
+      risklayer.current = addRisk(mapContainer.current, siteRef.current, yearRef.current,climateRef.current, presentBoolRef.current, horizonRef.current, 'risk')
+   
+    }
+    else{
+      mapContainer.current.eachLayer(function (layer) {
+        if (layer.defaultOptions != null){
+          if (layer.defaultOptions.id === "risk"){
+            mapContainer.current.removeLayer(layer);
+          }
+        }
+     });
+    }
+     
+  }
+  
 const [gender, setGender] = useState("SSP2");
 
 
@@ -453,14 +682,41 @@ const [type, setType] = useState("exposed");
 function onChangeValueAsset(e) {
   if (country === 'island' || siteRef.current !== "Tuvalu"){
     if (e.target.value === 'population'){
+      setdisableannual(true)
       fetchData(siteRef.current, e.target.value+"_exposed",getYaxis(siteRef.current,e.target.value,type),true,true);
     }
     else{
+      if(siteRef.current !== "Tuvalu"){
+        setdisableannual(true)
+      }
+      else{
+      setdisableannual(false)
+      }
     fetchData(siteRef.current, e.target.value+"_"+type,getYaxis(siteRef.current,e.target.value,type),true,true);
     }
   }
   else{
-
+   
+    if(siteRef.current !== "Tuvalu"){
+      setdisableannual2(true)
+      setdisableannual3(false)
+    }
+    else{
+      if (e.target.value === 'population'){
+        setdisableannual2(true)
+        setdisableannual3(false)
+      }
+      else{
+    setdisableannual2(false)
+    //console.log(typeRef.current)
+    if (typeRef.current === "annual"){
+    setdisableannual3(true)
+    }
+    else{
+      setdisableannual3(false)
+    }
+      }
+    }
     fetchDataCountry("5", e.target.value,'exposed',horizon, gender, getYaxis('Tuvalu',e.target.value,'exposed'),true, true);
   }
 
@@ -471,6 +727,7 @@ function onChangeValueAsset(e) {
       setType("exposed")
     }
     else{
+      setdisableannual(false)
       setExpo(false)
     }
  
@@ -486,10 +743,15 @@ function onChangeValueAsset(e) {
 
 function onChangeValueTV(e) {
   setType('exposed');
-
-  //var view = true;
+  setAsset('population')
+  setType('exposed')
+  setdisableannual3(false);
+  var view = type;
+  if (type === 'annual'){
+    view = 'exposed'
+  }
    if (e.target.value !== "tuvalu"){
-    fetchData(siteRef.current, asset+"_"+type,getYaxis(siteRef.current,asset,type),true,true);
+    fetchData(siteRef.current, asset+"_"+view,getYaxis(siteRef.current,asset,view),true,true);
     setDisplay3(true)
    }
    else{
@@ -507,13 +769,6 @@ function onChangeValueTV(e) {
      //}
   
    setCountry(e.target.value);
-   //mapContainer.current.removeLayer(layer2.current);
-  // layer2.current =  getMarker(mapContainer.current, siteRef.current, url_risk,assetRef.current,typeRef.current,siteRef.current,yearRef.current,climateRef.current,presentBoolRef.current,horizonRef.current,view,e.target.value)
-
-  // assetRef.current = e.target.value
- //mapContainer.current.removeLayer(layer2.current);
- //layer2.current =  getMarker(mapContainer.current, siteRef.current, url_risk,assetRef.current,typeRef.current,siteRef.current,yearRef.current,climateRef.current,presentBoolRef.current,horizonRef.current)
- //mayFlyer(mapContainer.current, siteRef.current);
  
   e.currentTarget.blur();
  }
@@ -527,21 +782,32 @@ function onChangeValueType(e) {
   if (e.target.value === "numexposed" || e.target.value === 'economicdamage'){
     vool = false
   }
-  if (country === 'island'|| siteRef.current !== "Tuvalu"){
-
-    fetchData(siteRef.current, asset+"_"+e.target.value,getYaxis(siteRef.current,asset,e.target.value),vool,stacked);
-  }
-  else{
-
-    fetchDataCountry("5", asset,e.target.value,horizon, gender, getYaxis('Tuvalu',asset,e.target.value),true, true);
-  }
-
-  console.log(e.target.value)
+ 
   if (e.target.value === "annual"){
-    setabool(true)
+
+    setdisableannual3(true)
+    //setabool(true)
+    if (country === 'tuvalu'){
+      vool = false
+      fetchDataAnnualIsland(siteRef.current, asset+"_"+e.target.value,getYaxis(siteRef.current,asset,e.target.value),vool,stacked);
+    }
+    else{
+    vool = false
+    fetchDataAnnualNational(siteRef.current, asset+"_"+e.target.value,getYaxis(siteRef.current,asset,e.target.value),vool,stacked);
+    }
   }
   else{
+    setdisableannual3(false)
     setabool(false)
+    if (country === 'island'|| siteRef.current !== "Tuvalu"){
+
+      fetchData(siteRef.current, asset+"_"+e.target.value,getYaxis(siteRef.current,asset,e.target.value),vool,stacked);
+    }
+    else{
+  
+      fetchDataCountry("5", asset,e.target.value,horizon, gender, getYaxis('Tuvalu',asset,e.target.value),true, true);
+    }
+  
   }
 /*
   if (e.target.value === "annualeconomic"){
@@ -715,7 +981,7 @@ e.currentTarget.blur();
     <p>Sites:</p>
       </div>
       <div className="col-sm-6">
-      <select className="form-select form-select-sm" aria-label=".form-select-sm example" onChange={handleSite} style={{fontSize:'13px', paddingLeft:1}}>
+      <select className="form-select form-select-sm" value={siteRef.current} aria-label=".form-select-sm example" onChange={handleSite} style={{fontSize:'13px', paddingLeft:1}}>
       <option value="Tuvalu">Tuvalu</option>
   <option value="Nanumaga">Nanumaga</option>
   <option value="Nanumea">Nanumea</option>
@@ -734,6 +1000,14 @@ e.currentTarget.blur();
  : <>
  <hr style={{marginTop:0}}/>
  <div className="row" style={{marginTop:'-10px'}}>
+ <div className="col-sm-6">
+
+<div className="form-check">
+     <input type="radio" className="form-check-input" value="island" id="island"
+  name="country" onChange={onChangeValueTV} checked={country === "island"}/>
+<label>National Scale</label>
+</div>
+</div>
 <div className="col-sm-6">
 <div className="form-check">
              <input type="radio" className="form-check-input" value="tuvalu" id="tuvalu"
@@ -741,14 +1015,7 @@ e.currentTarget.blur();
         <label>Island Scale</label>
         </div>
  </div>
- <div className="col-sm-6">
 
-        <div className="form-check">
-             <input type="radio" className="form-check-input" value="island" id="island"
-          name="country" onChange={onChangeValueTV} checked={country === "island"}/>
-        <label>Country Scale</label>
-        </div>
- </div>
  </div>
  </>}
       <hr style={{marginTop:0}}/>
@@ -784,6 +1051,16 @@ e.currentTarget.blur();
              <label>% Exposed</label>
              : <label>Exposed</label>}
              </div>
+             {display3 ?
+             null
+             : 
+             <div className="form-check">
+              <input type="radio" className="form-check-input" value="annual" id="annual"
+              name="type" onChange={onChangeValueType} checked={type === "annual"} disabled={ disableannual2}/>
+              <label style={{fontSize:'11px'}}>Annual Economic Damaged</label>
+              </div>
+             }
+
              <>{display3 ?
              <>
               <div className="form-check">
@@ -802,6 +1079,11 @@ e.currentTarget.blur();
               <input type="radio" className="form-check-input" value="damanged" id="damanged"
               name="type" onChange={onChangeValueType} checked={type === "damanged"} disabled={ expo}/>
               <label>% Damaged</label>
+              </div>
+              <div className="form-check">
+              <input type="radio" className="form-check-input" value="annual" id="annual"
+              name="type" onChange={onChangeValueType} checked={type === "annual"} disabled={ disableannual}/>
+              <label style={{fontSize:'11px'}}>Annual Economic Damaged</label>
               </div>
               </>
               : null}
@@ -825,7 +1107,7 @@ e.currentTarget.blur();
   </div>
 
   <div className="col-sm-6">
-  <select className="form-select form-select-sm" aria-label=".form-select-sm example" onChange={handleYear} id="Year2" name="Year2" style={{fontSize:'13px', paddingLeft:1}}>
+  <select disabled={disableannual3} className="form-select form-select-sm" aria-label=".form-select-sm example" onChange={handleYear} id="Year2" name="Year2" style={{fontSize:'13px', paddingLeft:1}}>
 <option value="5">5 Year</option>
 <option value="10">10 Year</option>
 <option value="25">25 Year</option>
@@ -841,23 +1123,23 @@ e.currentTarget.blur();
       <div className="row" style={{marginTop:'-10px'}}>
     <div className="col-sm-6">
 
-    <p>Climate Period:</p>
+    <p>Time Horizon:</p>
       </div>
       <div className="col-sm-6">
 
       <div className="form-check">
                   <input type="radio" className="form-check-input" value="present" id="present"
-               name="horizonShape" onChange={onChangeValueHorizon} checked={horizon === "present"} disabled={ economicbool}/>
+               name="horizonShape" onChange={onChangeValueHorizon} checked={horizon === "present"} disabled={ economicbool || disableannual3}/>
              <label>Present Climate </label>
              </div>
       <div className="form-check">
                   <input type="radio" className="form-check-input" value="2060" id="2060"
-                name="horizonShape" onChange={onChangeValueHorizon} checked={horizon === "2060"} disabled={ economicbool}/>
+                name="horizonShape" onChange={onChangeValueHorizon} checked={horizon === "2060"} disabled={ economicbool || disableannual3}/>
              <label>2060</label>
              </div>
              <div className="form-check">
                   <input type="radio" className="form-check-input" value="2100" id="2100"
-                name="horizonShape" onChange={onChangeValueHorizon} checked={horizon === "2100"} disabled={ economicbool}/>
+                name="horizonShape" onChange={onChangeValueHorizon} checked={horizon === "2100"} disabled={ economicbool || disableannual3}/>
              <label>2100</label>
              </div>
       </div>
@@ -866,17 +1148,17 @@ e.currentTarget.blur();
       <div className="row" style={{marginTop:'-10px'}}>
     <div className="col-sm-6">
 
-    <p>Climate Change Scenario:</p>
+    <p style={{fontSize:'11.5px'}}>Shared Socioeconomic Pathway:</p>
       </div>
       <div className="col-sm-6">
       <div className="form-check">
                   <input type="radio" className="form-check-input" value="SSP2" id="SSP2"
-                name="climateShape" onChange={onChangeValue} checked={gender === "SSP2"} disabled={presentBoolRef.current || economicbool }/>
+                name="climateShape" onChange={onChangeValue} checked={gender === "SSP2"} disabled={presentBoolRef.current || economicbool || disableannual3}/>
              <label>SSP2 4.5</label>
              </div>
              <div className="form-check">
                   <input type="radio" className="form-check-input" value="SSP5" id="SSP5"
-               name="climateShape" onChange={onChangeValue} checked={gender === "SSP5"} disabled={presentBoolRef.current || economicbool}/>
+               name="climateShape" onChange={onChangeValue} checked={gender === "SSP5"} disabled={presentBoolRef.current || economicbool || disableannual3}/>
              <label>SSP5 8.5</label>
              </div>
       </div>
@@ -926,7 +1208,7 @@ e.currentTarget.blur();
       <div className="row" style={{marginTop:'-10px'}}>
     <div className="col-sm-6">
 
-    <p>Climate Period:</p>
+    <p>Time Horizon:</p>
       </div>
       <div className="col-sm-6">
 
@@ -951,7 +1233,7 @@ e.currentTarget.blur();
       <div className="row" style={{marginTop:'-10px'}}>
     <div className="col-sm-6">
 
-    <p>Climate Change Scenario:</p>
+    <p style={{fontSize:'11.5px'}}>Shared Socioeconomic Pathway:</p>
       </div>
       <div className="col-sm-6">
       <div className="form-check">

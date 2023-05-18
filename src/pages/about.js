@@ -7,10 +7,30 @@ import {mayFlyer, addLayer,addShorelineImagenoPaneGen, addTVMarker} from "./help
 import { setGlobalState, useGlobalState } from './globalstate';
 import {toast} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
- 
+import config from '../components/data/config.json'
+import {
+  Button,Modal
+} from "react-bootstrap";
+
 toast.configure()
 const About = () => {
 
+  //model
+  const [infoshow, setinfoshow] = useState(false);
+  const [infotext, setinfotext] = useState(false);
+  const handleinfo = () => {
+    setinfoshow(false)
+  };
+  const handleClickImage= async(siteName) => {
+    var text = '';
+    if (siteName === "Return"){
+      text = ['A ',<b>Return Period</b>,', also known as a recurrence interval or repeat interval, is an average time or an estimated average time between flood events. For example, a 5-year annual recurrence interval event, is a flood event that statistically occurs once every 5 years.',
+     ];
+    }
+
+    setinfotext(text)
+    setinfoshow(true)
+  };
   //VARIABLES
   const [display, setDisplay] = useState(false);
   const displayRef = useRef(false);
@@ -26,7 +46,9 @@ const About = () => {
  // const url = "http://149.28.173.12/thredds/wms/Oceans/TCAP/final/";
 
  const nameer = useGlobalState("island_name");
-  const url = "https://tds-test.pacificdata.org/thredds/wms/Oceans/TCAP/final/"
+ const baseurl = config['thredds-address']
+ const url = baseurl+"final/"
+ // const url = "http://192.168.4.54:8080/thredds/wms/testAll/final/"
   const yearRef = useRef(5);
   const yearRef2 = useRef(5);
   const siteRef = useRef(nameer[0]);
@@ -78,7 +100,7 @@ const About = () => {
   legendColorRef.current.onAdd = function() {
           var div = L.DomUtil.create("div", "legend");
           div.innerHTML += "<h4>Legend</h4>";
-          div.innerHTML += '<img src="https://tds-test.pacificdata.org/thredds/wms/Oceans/TCAP/FinalDS/Present/Nanumaga_out10-yearARI.nc?version=1.3.0&request=GetLegendGraphic&LAYERS=Depth&STYLES=default-scalar/div-Spectral-inv&numcolorbands=250&transparent=TRUE&width=50&height=200&colorscalerange=0,2" alt="Legend">';
+          div.innerHTML += '<img src="'+baseurl+'FinalDS/Present/Nanumaga_out10-yearARI.nc?version=1.3.0&request=GetLegendGraphic&LAYERS=Depth&STYLES=default-scalar/div-Spectral-inv&numcolorbands=250&transparent=TRUE&width=50&height=200&colorscalerange=0,2" alt="Legend">';
          return div;
         };
         legendColorRef.current.addTo(mapContainer.current);
@@ -459,6 +481,7 @@ const [gender, setGender] = useState("SSP2");
     <div className="col-sm-6">
 
     <p>Sites:</p>
+    
       </div>
       <div className="col-sm-6">
       <select className="form-select form-select-sm" value={nameer[0]} aria-label=".form-select-sm example" onChange={handleSite} style={{fontSize:'13px', paddingLeft:1}}>
@@ -480,7 +503,8 @@ const [gender, setGender] = useState("SSP2");
     <div className="row"style={{marginTop:'-10px'}}>
     <div className="col-sm-6">
 
-    <p>Return Period:</p>
+    <p>Return Period: <input alt="loading.." onClick={function(e) {handleClickImage('Return')}} type="image" src={require('./info.png')} style={{marinTop:"10px", width:"15px", height:"15px"}}/>
+     {/* <img onClick={function(e) {handleClickImage('Return period')}} src={require('./info.png')} alt='logo' style={{width:"13px", height:"13px"}}/>*/}</p>
       </div>
 
       <div className="col-sm-6">
@@ -502,7 +526,7 @@ const [gender, setGender] = useState("SSP2");
       <div className="row" style={{marginTop:'-10px'}}>
     <div className="col-sm-6">
 
-    <p>Climate Period:</p>
+    <p>Time Horizon: <input alt="loading.." onClick={function(e) {handleClickImage('Time')}} type="image" src={require('./info.png')} style={{marinTop:"10px", width:"15px", height:"15px"}}/></p>
       </div>
       <div className="col-sm-6">
 
@@ -539,7 +563,7 @@ const [gender, setGender] = useState("SSP2");
       <div className="row" style={{marginTop:'-10px'}}>
     <div className="col-sm-6">
 
-    <p>Climate Change Scenario:</p>
+    <p style={{fontSize:'11.5px'}}>Shared Socioeconomic Pathway: <input alt="loading.." onClick={function(e) {handleClickImage('Shared')}} type="image" src={require('./info.png')} style={{marinTop:"10px", width:"15px", height:"15px"}}/></p>
       </div>
       <div className="col-sm-6">
       <div className="form-check">
@@ -603,7 +627,7 @@ const [gender, setGender] = useState("SSP2");
    <div className="row" style={{marginTop:'-10px'}}>
     <div className="col-sm-6">
 
-    <p>Climate Period:</p>
+    <p>Time Horizon:</p>
       </div>
       <div className="col-sm-6">
 
@@ -628,7 +652,7 @@ const [gender, setGender] = useState("SSP2");
       <div className="row" style={{marginTop:'-10px'}}>
     <div className="col-sm-6">
 
-    <p>Climate Change Scenario:</p>
+    <p style={{fontSize:'11.5px'}}>Shared Socioeconomic Pathway:</p>
       </div>
       <div className="col-sm-6">
       <div className="form-check">
@@ -655,6 +679,21 @@ const [gender, setGender] = useState("SSP2");
       <div id="map" ref={mapContainer} style={{width:"100%", height:"100%",Zindex: "auto"}}></div>
       </div>
     </div>
+    <Modal show={infoshow} onHide={handleinfo} size="lg">
+    <Modal.Header>
+      Information
+      </Modal.Header>
+      
+        <Modal.Body>
+        <p>{infotext}</p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleinfo}>
+            Close
+          </Button>
+         
+        </Modal.Footer>
+      </Modal>
   </div>
 
   )
