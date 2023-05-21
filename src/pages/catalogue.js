@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import Pdf from '../reports/JGR Oceans - 2023 - Wandres - Wave Climate Variability and Trends_in_Tuvalu_Based_on_a_44‐Year_High‐Resolution_Wave.pdf';
 const Catalogue = () => {
 
   const _isMounted = useRef(true);
@@ -11,6 +12,7 @@ const Catalogue = () => {
    return () => { _isMounted.current = false }; 
    },[]);
    
+  
 
   return (
     <>
@@ -20,25 +22,11 @@ const Catalogue = () => {
 
     <div class="card" style={{width: "100%"}}>
 
-  <img src={require('../images/ocean22.jpg')} class="card-img-top" alt="Loading.."/>
+  <img style={{height:'150px'}} src={require('../reports/JGR Oceans - 2023 - Wandres - Wave Climate Variability and Trends_in_Tuvalu_Based_on_a_44‐Year_High‐Resolution_Wave.png')} class="card-img-top" alt="Loading.."/>
   <div class="card-body">
-    <h5 class="card-title">Risk profile</h5>
-    <p class="card-text">Risk profile for Nanumaga</p>
-
-    <button type="button" className="btn btn-primary">Browse</button>
-  </div>
-</div>
-</div>
-<div className="col-sm-3">
-
-    <div class="card" style={{width: "100%"}}>
-
-  <img src={require('../images/ocean22.jpg')} class="card-img-top" alt="Loading.."/>
-  <div class="card-body">
-    <h5 class="card-title">Card title</h5>
-    <p class="card-text">Some quick example text to build on the car</p>
-
-    <button type="button" className="btn btn-primary">Browse</button>
+    <h5 class="card-title">Research Paper</h5>
+    <p class="card-text" style={{fontSize:'12px'}}>Wave Climate Variability and Trends in Tuvalu Based on a 44-Year High-Resolution Wave Hindcast.</p>
+    <a href = {Pdf} target = "_blank" rel="noopener noreferrer"  type="button" className="btn btn-primary">Browse</a>
   </div>
 </div>
 </div>
