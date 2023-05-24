@@ -441,9 +441,9 @@ const onClickShow3= async(siteName) => {
     }
   });
   staelliteLayer.current = addShorelineImage(mapContainer.current, siteName, "image", 'left','2019')
- 
-    setYears(sitesShoreline())
+  setYears(sitesShoreline())
 
+  setYearsCheck(sitesShoreline2())
   //setYearsCheck(sitesShoreline2())
   layer2.current = getArea(mapContainer.current, siteName).on('click', function(e) {onClickShow2(siteName)});
    
