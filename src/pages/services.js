@@ -479,6 +479,7 @@ const handleSite=(e)=>{
           mapContainer.current.removeLayer(layer2.current);
          }
           setYears([])
+          setYearsCheck([])
       mayFlyer(mapContainer.current, 'Tuvalu');
       }
   else{
@@ -492,6 +493,7 @@ const handleSite=(e)=>{
       }
     });
   setYears(sitesShoreline())
+  setYearsCheck(sitesShoreline2())
   setIsCheckAll(false);
   setInput(!input);
   yearRef.current = 2019;
